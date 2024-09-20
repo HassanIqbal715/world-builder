@@ -1,51 +1,66 @@
-#include <SFML/Graphics.hpp>
-#include <iostream>
-using namespace sf;
-using namespace std;
+#include<SFML/Graphics.hpp>
+#include "title_screen.cpp"
+#include "functions.cpp"
 
-class Box {
-private: 
+using namespace sf;
+
+class settingsButton {
+private:
 	RectangleShape shape;
 	Text text;
-	Font font;
-	float shapeWidth;
-	float shapeHeight;
+	int shapeWidth;
+	int shapeHeight;
 
 public:
-	Box() {
-		shapeWidth = 470;
-		shapeHeight = 100;
-		font.loadFromFile("Fonts/font.ttf");
-		text.setFont(font);
-		text.setCharacterSize(40);
-		text.setFillColor(Color::White);
+	settingsButton() {
+		shapeWidth = 28;
+		shapeHeight = 28;
 		shape.setSize(Vector2f(shapeWidth, shapeHeight));
-		shape.setOutlineThickness(2.0f);
-		shape.setFillColor(Color::Black);
-		shape.setOutlineColor(Color::White);
 	}
 
-	void setText(string textString) {
-		text.setString(textString);
-		auto center = text.getLocalBounds().getSize() / 2.f;
-		text.setOrigin(center);
-	}
-
-	void setPosition(float x, float y) {
-		shape.setPosition(Vector2f(x, y));
-		text.setPosition(Vector2f(x + shapeWidth/2, y + shape.getLocalBounds().getSize().y / 3));
-	}
-
-	void setSize(float width, float height) {
-		shape.setSize(Vector2f(width, height));
+	void setButtonColor(sf::Color color) {
+		shape.setFillColor(color);
 	}
 
 	void setOutlineThickness(float thickness) {
 		shape.setOutlineThickness(thickness);
 	}
 
-	void render(RenderWindow& window) {
-		window.draw(shape);
-		window.draw(text);
+	void setOutlineColor(sf::Color color) {
+		shape.setOutlineColor(color);
+	}
+
+	void setPosition(float x, float y) {
+		shape.setPosition(Vector2f(x, y));
+	}
+
+	void setSize(float width, float height) {
+		shapeWidth = width;
+		shapeHeight = height;
+		shape.setSize(Vector2f(shapeWidth, shapeHeight));
+	}
+};
+
+class SettingsScreen {
+private:
+	TitleButton backButton;
+	Box backgroundColorButton;
+
+public:
+	SettingsScreen() {
+		backButton.setText("Back");
+		backButton.setPosition(Vector2f(66, 774));
+		backgroundColorButton.setText("Background Color");
+		backgroundColorButton.setPosition(102, 91);
+	}
+
+	void update(RenderWindow &window, void(*titleScreen)()) {
+		Vector2f mousePos = static_cast<Vector2f>(Mouse::getPosition(window));
+		backButton.update(mousePos, window, titleScreen);
+	}
+
+	void render(RenderWindow &window) {
+		backButton.render(window);
+		backgroundColorButton.render(window);
 	}
 };
