@@ -1,41 +1,42 @@
-#include <SFML\Graphics.hpp>
+#include <SFML/Graphics.hpp>
 #include <iostream>
 
 using namespace std;
+using namespace sf;
 
 enum BUTTON_STATE {IDLE, HOVER, PRESSED};
 
 class TitleText {
 private:
-	sf::Text text;
-	sf::Font font;
+	Text text;
+	Font font;
 
 public:
 	TitleText() {
 		font.loadFromFile("Fonts/font.ttf");
 		text.setFont(font);
 		text.setCharacterSize(100);
-		text.setFillColor(sf::Color::White);
+		text.setFillColor(Color::White);
 	}
 
 	void setText(string textString) {
 		text.setString(textString);
 	}
 
-	void setPosition(sf::Vector2f pos) {
+	void setPosition(Vector2f pos) {
 		text.setPosition(pos);
 	}
 
-	void render(sf::RenderWindow &window) {
+	void render(RenderWindow &window) {
 		window.draw(text);
 	}
 };
 
 class TitleButton {
 private:
-	sf::Text text;
-	sf::Font font;
-	sf::RectangleShape shape;
+	Text text;
+	Font font;
+	RectangleShape shape;
 	BUTTON_STATE BTN_STATE;
 
 public:
@@ -43,16 +44,16 @@ public:
 		font.loadFromFile("Fonts/font.ttf");
 		text.setFont(font);
 		text.setCharacterSize(40);
-		text.setFillColor(sf::Color::White);
-		shape.setSize(sf::Vector2f(300, 100));
+		text.setFillColor(Color::White);
+		shape.setSize(Vector2f(300, 100));
 		shape.setOutlineThickness(2.0f);
-		shape.setFillColor(sf::Color::Black);
-		shape.setOutlineColor(sf::Color::White);
+		shape.setFillColor(Color::Black);
+		shape.setOutlineColor(Color::White);
 	}
 
-	void setPosition(sf::Vector2f pos) {
+	void setPosition(Vector2f pos) {
 		shape.setPosition(pos);
-		text.setPosition(sf::Vector2f(pos.x + 150, pos.y + shape.getLocalBounds().getSize().y/3));
+		text.setPosition(Vector2f(pos.x + 150, pos.y + shape.getLocalBounds().getSize().y/3));
 	}
 
 	void setText(string textString) {
@@ -61,42 +62,42 @@ public:
 		text.setOrigin(center);
 	}
 
-	bool hover(sf::Vector2f mousePos) {
+	bool hover(Vector2f mousePos) {
 		if (shape.getGlobalBounds().contains(mousePos))
 			return true;
 	}
 
 
-	void update(sf::Vector2f mousePos, sf::RenderWindow &window, void (*function)()) {
+	void update(Vector2f mousePos, RenderWindow &window, void (*function)()) {
 		BTN_STATE = IDLE;
 		if (hover(mousePos)) {
 			BTN_STATE = HOVER;
-			if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+			if (Mouse::isButtonPressed(Mouse::Left)) {
 				BTN_STATE = PRESSED;
 			}
 		}
 
 		switch (BTN_STATE) {
 		case HOVER:
-			shape.setFillColor(sf::Color::Cyan);
+			shape.setFillColor(Color{80, 80, 80});
 			break;
 
 		case IDLE:
-			shape.setFillColor(sf::Color::Black);
+			shape.setFillColor(Color::Black);
 			break;
 
 		case PRESSED:
-			(*(function))();
 			window.close();
+			(*(function))();
 			break;
 
 		default:
-			shape.setFillColor(sf::Color::Black);
+			shape.setFillColor(Color::Black);
 			break;
 		}
 	}
 
-	void render(sf::RenderWindow &window) {
+	void render(RenderWindow &window) {
 		window.draw(shape);
 		window.draw(text);
 	}
@@ -112,25 +113,25 @@ public:
 		playButton.setText("Play");
 		settingsButton.setText("Settings");
 		exitButton.setText("Exit");
-		playButton.setPosition(sf::Vector2f(650, 450));
-		settingsButton.setPosition(sf::Vector2f(650, 580));
-		exitButton.setPosition(sf::Vector2f(650, 710));
+		playButton.setPosition(Vector2f(650, 450));
+		settingsButton.setPosition(Vector2f(650, 580));
+		exitButton.setPosition(Vector2f(650, 710));
 
 		worldText.setText("World");
-		worldText.setPosition(sf::Vector2f(665, 90));
+		worldText.setPosition(Vector2f(665, 90));
 		builderText.setText("Builder");
-		builderText.setPosition(sf::Vector2f(632, 216));
+		builderText.setPosition(Vector2f(632, 216));
 	}
 
-	void update(sf::RenderWindow &window, void(*play)(), void(*settings)(), void(*exit)()) {
-		sf::Vector2f mousePos = static_cast<sf::Vector2f>(sf::Mouse::getPosition(window));
+	void update(RenderWindow &window, void(*play)(), void(*settings)(), void(*exit)()) {
+		Vector2f mousePos = static_cast<Vector2f>(Mouse::getPosition(window));
 
 		playButton.update(mousePos, window, play);
 		settingsButton.update(mousePos, window, settings);
 		exitButton.update(mousePos, window, exit);
 	}
 
-	void render(sf::RenderWindow &window) {
+	void render(RenderWindow &window) {
 		playButton.render(window);
 		settingsButton.render(window);
 		exitButton.render(window);
