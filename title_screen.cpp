@@ -66,10 +66,14 @@ public:
 			return true;
 	}
 
-	void update(sf::Vector2f mousePos) {
+
+	void update(sf::Vector2f mousePos, sf::RenderWindow &window, void (*function)()) {
 		BTN_STATE = IDLE;
 		if (hover(mousePos)) {
 			BTN_STATE = HOVER;
+			if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+				BTN_STATE = PRESSED;
+			}
 		}
 
 		switch (BTN_STATE) {
@@ -81,8 +85,14 @@ public:
 			shape.setFillColor(sf::Color::Black);
 			break;
 
+		case PRESSED:
+			(*(function))();
+			window.close();
+			break;
+
 		default:
 			shape.setFillColor(sf::Color::Black);
+			break;
 		}
 	}
 
@@ -93,5 +103,38 @@ public:
 };
 
 class TitleScreen {
+private:
+	TitleButton playButton, settingsButton, exitButton;
+	TitleText worldText, builderText;
 
+public:
+	TitleScreen() {
+		playButton.setText("Play");
+		settingsButton.setText("Settings");
+		exitButton.setText("Exit");
+		playButton.setPosition(sf::Vector2f(650, 450));
+		settingsButton.setPosition(sf::Vector2f(650, 580));
+		exitButton.setPosition(sf::Vector2f(650, 710));
+
+		worldText.setText("World");
+		worldText.setPosition(sf::Vector2f(665, 90));
+		builderText.setText("Builder");
+		builderText.setPosition(sf::Vector2f(632, 216));
+	}
+
+	void update(sf::RenderWindow &window, void(*play)(), void(*settings)(), void(*exit)()) {
+		sf::Vector2f mousePos = static_cast<sf::Vector2f>(sf::Mouse::getPosition(window));
+
+		playButton.update(mousePos, window, play);
+		settingsButton.update(mousePos, window, settings);
+		exitButton.update(mousePos, window, exit);
+	}
+
+	void render(sf::RenderWindow &window) {
+		playButton.render(window);
+		settingsButton.render(window);
+		exitButton.render(window);
+		worldText.render(window);
+		builderText.render(window);
+	}
 };
