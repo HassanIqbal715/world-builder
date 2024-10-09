@@ -6,20 +6,21 @@ Color Background_Color = Color::Black;
 int window_size_x = 1600;
 int window_size_y = 900;
 
-void titleWindow();
-void playWindow();
-void settingsWindow();
-void exitWindow();
+void titleWindow(RenderWindow&);
+void playWindow(RenderWindow&);
+void settingsWindow(RenderWindow& window);
+void exitWindow(RenderWindow& window);
 
 int main() {
-	titleWindow();
+	RenderWindow window(VideoMode(window_size_x, window_size_y), "World Builder", Style::Close | Style::Resize);
+	window.setFramerateLimit(30);
+	titleWindow(window);
 }
 
-void titleWindow() {
+void titleWindow(RenderWindow& window) {
+	window.clear();
 	TitleScreen title;
-	RenderWindow window(VideoMode(window_size_x, window_size_y), "World Builder", Style::Close | Style::Resize);
 	Event event;
-	window.setFramerateLimit(30);
 	while (window.isOpen())
 	{
 		while (window.pollEvent(event))
@@ -36,13 +37,31 @@ void titleWindow() {
 	}
 }
 
-void playWindow() {
+void playWindow(RenderWindow& window) {
 	cout << "Play";
+	window.clear(Background_Color);
+	window.setFramerateLimit(60);
+	Play play;
+	Event event;
+	while (window.isOpen())
+	{
+		while (window.pollEvent(event))
+		{
+			if (event.type == event.Closed)
+			{
+				window.close();
+			}
+			play.update(window);
+			window.clear(Background_Color); 
+			play.render(window);
+			window.display();
+		}
+	}
 }
 
-void settingsWindow() {
+void settingsWindow(RenderWindow& window) {
+	window.clear();
 	SettingsScreen settings;
-	RenderWindow window(VideoMode(window_size_x, window_size_y), "World Builder", Style::Close | Style::Resize);
 	Event event;
 	while (window.isOpen())
 	{
@@ -60,6 +79,7 @@ void settingsWindow() {
 	}
 }
 
-void exitWindow() {
+void exitWindow(RenderWindow& window) {
 	cout << "Exit";
+	window.close(); 
 }
