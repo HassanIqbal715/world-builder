@@ -1,6 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
-
+#include "game.cpp"
 using namespace std;
 using namespace sf;
 
@@ -38,14 +38,18 @@ private:
 	Font font;
 	RectangleShape shape;
 	BUTTON_STATE BTN_STATE;
+	float shapeWidth;
+	float shapeHeight;
 
 public:
 	TitleButton() {
+		shapeWidth = 300;
+		shapeHeight = 100;
 		font.loadFromFile("Fonts/font.ttf");
 		text.setFont(font);
 		text.setCharacterSize(40);
 		text.setFillColor(Color::White);
-		shape.setSize(Vector2f(300, 100));
+		shape.setSize(Vector2f(shapeWidth, shapeHeight));
 		shape.setOutlineThickness(2.0f);
 		shape.setFillColor(Color::Black);
 		shape.setOutlineColor(Color::White);
@@ -53,7 +57,7 @@ public:
 
 	void setPosition(Vector2f pos) {
 		shape.setPosition(pos);
-		text.setPosition(Vector2f(pos.x + 150, pos.y + shape.getLocalBounds().getSize().y/3));
+		text.setPosition(Vector2f(pos.x + shapeWidth/2, pos.y + shape.getLocalBounds().getSize().y/3));
 	}
 
 	void setText(string textString) {
@@ -62,13 +66,19 @@ public:
 		text.setOrigin(center);
 	}
 
+	void setSize(float width, float height) {
+		shape.setSize(Vector2f(width, height));
+		shapeWidth = width;
+		shapeHeight = height;
+	}
+
 	bool hover(Vector2f mousePos) {
 		if (shape.getGlobalBounds().contains(mousePos))
 			return true;
 	}
 
 
-	void update(Vector2f mousePos, RenderWindow &window, void (*function)()) {
+	void update(Vector2f mousePos, RenderWindow &window, void (*function)(RenderWindow&)) {
 		BTN_STATE = IDLE;
 		if (hover(mousePos)) {
 			BTN_STATE = HOVER;
@@ -87,8 +97,7 @@ public:
 			break;
 
 		case PRESSED:
-			window.close();
-			(*(function))();
+			(*(function))(window);
 			break;
 
 		default:
@@ -123,7 +132,7 @@ public:
 		builderText.setPosition(Vector2f(632, 216));
 	}
 
-	void update(RenderWindow &window, void(*play)(), void(*settings)(), void(*exit)()) {
+	void update(RenderWindow &window, void(*play)(RenderWindow&), void(*settings)(RenderWindow&), void(*exit)(RenderWindow&)) {
 		Vector2f mousePos = static_cast<Vector2f>(Mouse::getPosition(window));
 
 		playButton.update(mousePos, window, play);
